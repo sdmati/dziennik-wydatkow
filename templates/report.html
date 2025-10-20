@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Dziennik wydatków</h1>
+        </header>
+        <nav>
+            <a href="{{ url_for('index')}}" class="navButton">Strona główna</a>
+            <a href="{{ url_for('add')}}" class="navButton">Dodaj rekord</a>
+            <a href="{{ url_for('stats')}}" class="navButton">Statystyki</a>
+            <a href="{{ url_for('report')}}" class="navButton">Generuj raport</a>
+        </nav>
+        <main>
+            <div class="chart">
+            </div>
+            <div class="dataInput">
+
+            </div>
+        </main>
+        <section>
+        </section>
+        <footer>
+            <h5>Mateusz Siudy</h5>
+        </footer>
+    </div>
+</body>
+</html>

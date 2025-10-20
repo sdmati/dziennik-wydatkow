@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="index">
+    <div class="wrapper">
+        <header>
+            <h1>Dziennik wydatków</h1>
+        </header>
+        <nav>
+            <a href="{{ url_for('index')}}" class="navButton">Strona główna</a>
+            <a href="{{ url_for('add')}}" class="navButton">Dodaj rekord</a>
+            <a href="{{ url_for('stats')}}" class="navButton">Statystyki</a>
+            <a href="{{ url_for('report')}}" class="navButton">Generuj raport</a>
+        </nav>
+        <main>
+            <div class="chart">
+                <canvas id="myChart"></canvas>
+                <script>
+                    const labels = {{ labels|tojson }};
+                    const values = {{ values|tojson }};
+
+                    const ctx = document.getElementById("myChart").getContext("2d");
+                    new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: "Suma wydatków",
+                                data: values,
+                                fill: true,
+                                backgroundColor: "rgba(19, 86, 151, 0.8)",
+                                // lineTension: 0.5
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: true }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+
+            <div class="statistics">
+
+            </div>
+        </main>
+        <footer>
+            <h5>Mateusz Siudy</h5>
+        </footer>
+    </div>
+</body>
+</html>

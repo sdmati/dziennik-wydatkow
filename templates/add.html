@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Dziennik wydatków</h1>
+        </header>
+        <nav>
+            <a href="{{ url_for('index')}}" class="navButton">Strona główna</a>
+            <a href="{{ url_for('add')}}" class="navButton">Dodaj rekord</a>
+            <a href="{{ url_for('stats')}}" class="navButton">Statystyki</a>
+            <a href="{{ url_for('report')}}" class="navButton">Generuj raport</a>
+        </nav>
+        <main>
+            <div class="chart">
+            </div>
+            <div class="dataInput">
+                <form action="" method="POST">
+                    <input type="text" name="name" placeholder="Nazwa" required>
+                    <select name="category" id="category" required>
+                        <option value="1">Jedzenie</option>
+                        <option value="2">Napoje</option>
+                        <option value="3">Alkohol</option>
+                        <option value="4">Artykuły domowe</option>
+                        <option value="5">Środki czystości</option>
+                        <option value="6">Rozrywka</option>
+                        <option value="7">Sport</option>
+                        <option value="8">Transport</option>
+                        <option value="0">Inne</option>
+                    </select>
+                    <input type="number" name="amount" placeholder="Kwota" min="0" step="0.01" required>
+                    <input type="text" name="comment" placeholder="Komentarz">
+                    <input type="date" name="date">
+                    <input type="checkbox" name="privExpense" value="1">
+                    <input type="submit" value="Potwierdź">
+                </form>
+            </div>
+        </main>
+        <section>
+        </section>
+        <footer>
+            <h5>Mateusz Siudy</h5>
+        </footer>
+    </div>
+</body>
+</html>
