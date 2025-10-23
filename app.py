@@ -9,6 +9,13 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def generateCategories():
+    conn = get_db_connection()
+    categories = conn.execute('''SELECT id, name FROM categories''').fetchall()
+    categories.append(categories.pop(0))
+
+    return categories
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     conn = get_db_connection()
@@ -54,6 +61,10 @@ def index():
 def add():
     conn = get_db_connection()
 
+    # generowanie kategorii do listy
+
+    categories = generateCategories()
+
     # wprowadzanie danych
 
     if request.method == 'POST':
@@ -75,11 +86,12 @@ def add():
         conn.commit()
         return redirect('/')
 
-    return render_template('add.html')
+    return render_template('add.html', categories = categories)
 
 @app.route('/stats', methods=['GET', 'POST'])
 def stats():
     conn = get_db_connection()
+    categories = generateCategories()
 
     if request.method == 'POST':
         firstDate = request.form.get('firstDate').strip()
@@ -100,7 +112,7 @@ def stats():
         labels = [row["date"] for row in chartData]
         values = [row["amount"] for row in chartData]
 
-        return render_template('stats.html', labels=labels, values=values, expenses = expenses)
+        return render_template('stats.html', labels=labels, values=values, expenses = expenses, categories=categories)
 
     chartData = conn.execute('''SELECT amount, date FROM expenses
                                 ORDER BY date''').fetchall()
@@ -108,13 +120,14 @@ def stats():
     expenses = conn.execute('''SELECT e.id, e.name, c.name AS category, e.amount, e.comment, e.privExpense, e.date
                                FROM expenses e
                                 JOIN categories c ON e.category = c.id
-                               ORDER BY e.date ASC LIMIT 10''').fetchall()
+                               ORDER BY e.date DESC LIMIT 10''').fetchall()
+
     conn.close()
 
     labels = [row["date"] for row in chartData]
     values = [row["amount"] for row in chartData]
 
-    return render_template('stats.html', labels=labels, values=values, expenses = expenses)
+    return render_template('stats.html', labels=labels, values=values, expenses = expenses, categories = categories)
 
 @app.route('/report', methods=['GET', 'POST'])
 def report():
