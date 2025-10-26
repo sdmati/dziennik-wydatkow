@@ -1,3 +1,5 @@
+from time import strftime
+
 from flask import Flask, render_template, request, redirect
 import sqlite3
 from datetime import datetime
@@ -88,6 +90,36 @@ def add():
 
     return render_template('add.html', categories = categories)
 
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit(id):
+    conn = get_db_connection()
+    categories = generateCategories()
+    data = conn.execute('''SELECT e.name, e.id, e.amount, e.category, e.comment, e.privExpense, e.date FROM expenses e WHERE e.id = ?''', (id,)).fetchone()
+
+
+    if request.method == 'POST':
+        name = request.form['name']
+        category = int(request.form['category'])
+        amount = request.form['amount']
+        comment = request.form['comment']
+        comment = None if comment == '' else comment
+        date = request.form.get('date').strip()
+        if not date:
+            date = datetime.now().strftime('%Y-%m-%d')
+
+        privExpense = 1 if request.form.get('privExpense') else 0
+
+        conn.execute('''UPDATE expenses SET name = ?, category = ?, amount = ?, comment = ?, privExpense = ?, date = ? WHERE id = ?''', (name, category, amount, comment, privExpense, date, id))z
+        conn.commit()
+        data = conn.execute('''SELECT e.name, e.id, e.amount, e.category, e.comment, e.privExpense, e.date
+                               FROM expenses e
+                               WHERE e.id = ?''', (id,)).fetchone()
+        conn.close()
+        return render_template('edit.html', categories = categories, data = data)
+
+
+    return render_template('edit.html', categories = categories, data = data)
+
 @app.route('/stats', methods=['GET', 'POST'])
 def stats():
     conn = get_db_connection()
@@ -96,16 +128,40 @@ def stats():
     if request.method == 'POST':
         firstDate = request.form.get('firstDate').strip()
         secondDate = request.form.get('secondDate').strip()
+        category = request.form.get('category').strip()
 
-        if firstDate > secondDate:
-            firstDate, secondDate = secondDate, firstDate
+        if firstDate == '' or secondDate == '':
+            if category == 'every':
+                chartQuery = '''SELECT amount, date FROM expenses ORDER BY date ASC'''
+                tableQuery = '''SELECT e.id, e.name, c.name AS category, e.amount, e.comment, e.privExpense, e.date FROM expenses e JOIN categories c ON e.category = c.id
+                                ORDER BY e.date ASC'''
+                parameters = ()
+            else:
+                chartQuery = '''SELECT amount, date FROM expenses e JOIN categories c ON e.category = c.id
+                           WHERE c.id = ? ORDER BY e.date ASC'''
+                tableQuery = '''SELECT e.id, e.name, c.name AS category, e.amount, e.comment, e.privExpense, e.date FROM expenses e JOIN categories c ON e.category = c.id
+                             WHERE c.id = ? ORDER BY e.date ASC '''
+                parameters = (category,)
 
-        chartData = conn.execute('''SELECT amount, date FROM expenses 
-                                    WHERE date BETWEEN ? AND ? ORDER BY date''',(firstDate, secondDate)).fetchall()
+        else:
+            if firstDate > secondDate:
+                firstDate, secondDate = secondDate, firstDate
+            if category == 'every':
+                chartQuery = '''SELECT e.amount, e.date FROM expenses e
+                           WHERE e.date BETWEEN ? AND ? ORDER BY e.date ASC'''
+                tableQuery = '''SELECT e.id, e.name, c.name AS category, e.amount, e.comment, e.privExpense, e.date FROM expenses e JOIN categories c ON e.category = c.id
+                             WHERE e.date BETWEEN ? AND ? ORDER BY e.date ASC '''
+                parameters = (firstDate, secondDate)
 
-        expenses = conn.execute('''SELECT e.id, e.name, c.name AS category, e.amount, e.comment, e.privExpense, e.date FROM expenses e JOIN categories c ON e.category = c.id
-                                   WHERE e.date BETWEEN ? AND ? 
-                                   ORDER BY e.date ASC LIMIT 10''', (firstDate, secondDate)).fetchall()
+            else:
+                chartQuery = '''SELECT e.amount, e.date FROM expenses e JOIN categories c ON e.category = c.id
+                           WHERE e.date BETWEEN ? AND ? AND c.id = ? ORDER BY e.date ASC'''
+                tableQuery = '''SELECT e.id, e.name, c.name AS category, e.amount, e.comment, e.privExpense, e.date FROM expenses e JOIN categories c ON e.category = c.id
+                             WHERE e.date BETWEEN ? AND ? AND c.id = ? ORDER BY e.date ASC '''
+                parameters = (firstDate, secondDate, category)
+
+        chartData = conn.execute(chartQuery, parameters).fetchall()
+        expenses = conn.execute(tableQuery, parameters).fetchall()
 
         conn.close()
 

@@ -22,10 +22,11 @@
             <div class="dataInput">
                 <form action="" method="POST">
                     Zakres dat od
-                    <input type="date" name="firstDate" required> do
-                    <input type="date" name="secondDate" required>
+                    <input type="date" name="firstDate"> do
+                    <input type="date" name="secondDate">
                     Kategoria:
                     <select name="category" id="category">
+                        <option value="every">Wszystko</option>
                         {% for category in categories %}
                             <option value={{ category.id }}> {{ category.name }}</option>
                         {% endfor %}
@@ -68,6 +69,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th>Edytuj</th>
                         <th>id</th>
                         <th>Nazwa</th>
                         <th>Kategoria</th>
@@ -80,6 +82,7 @@
                 <tbody>
                     {% for expense in expenses %}
                     <tr>
+                        <td><a href="{{ url_for('edit', id=expense.id) }}">x</a></td>
                         <td>{{ expense.id }}</td>
                         <td>{{ expense.name }}</td>
                         <td>{{ expense.category }}</td>

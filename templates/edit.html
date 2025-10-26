@@ -1,10 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Dziennik wydatków</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-
+    <div class="wrapper">
+        <header>
+            <h1>Dziennik wydatków</h1>
+        </header>
+        <nav>
+            <a href="{{ url_for('index')}}" class="navButton">Strona główna</a>
+            <a href="{{ url_for('add')}}" class="navButton">Dodaj rekord</a>
+            <a href="{{ url_for('stats')}}" class="navButton">Statystyki</a>
+            <a href="{{ url_for('report')}}" class="navButton">Generuj raport</a>
+        </nav>
+        <main>
+            <div class="chart">
+            </div>
+            <div class="dataInput">
+                <form action="" method="POST">
+                    <input type="text" name="name" placeholder="Nazwa" value="{{ data['name'] }}" required>
+                    <select name="category" id="category">
+                        {% for category in categories %}
+                            <option value={{ category.id }} {% if category.id == data['category'] %} selected {% endif %}> {{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" name="amount" placeholder="Kwota" min="0" step="0.01" value="{{ data['amount'] }}" required>
+                    <input type="text" name="comment" placeholder="Komentarz" value="{{ data['comment'] }}">
+                    <input type="date" name="date" value="{{ data['date'] }}">
+                    {% if data['privExpense'] %}
+                        <input type="checkbox" name="privExpense" value="1" checked>
+                    {% else %}
+                        <input type="checkbox" name="privExpense" value="1">
+                    {% endif %}
+                    <input type="submit" value="Potwierdź">
+                </form>
+            </div>
+        </main>
+        <section>
+        </section>
+        <footer>
+            <h5>Mateusz Siudy</h5>
+        </footer>
+    </div>
 </body>
 </html>
