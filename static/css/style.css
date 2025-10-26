@@ -50,6 +50,7 @@ nav{
 
 main{
     /* flex: 0 0 50%; */
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     height: 500px;

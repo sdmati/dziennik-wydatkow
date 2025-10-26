@@ -109,7 +109,7 @@ def edit(id):
 
         privExpense = 1 if request.form.get('privExpense') else 0
 
-        conn.execute('''UPDATE expenses SET name = ?, category = ?, amount = ?, comment = ?, privExpense = ?, date = ? WHERE id = ?''', (name, category, amount, comment, privExpense, date, id))z
+        conn.execute('''UPDATE expenses SET name = ?, category = ?, amount = ?, comment = ?, privExpense = ?, date = ? WHERE id = ?''', (name, category, amount, comment, privExpense, date, id))
         conn.commit()
         data = conn.execute('''SELECT e.name, e.id, e.amount, e.category, e.comment, e.privExpense, e.date
                                FROM expenses e
@@ -134,7 +134,7 @@ def stats():
             if category == 'every':
                 chartQuery = '''SELECT amount, date FROM expenses ORDER BY date ASC'''
                 tableQuery = '''SELECT e.id, e.name, c.name AS category, e.amount, e.comment, e.privExpense, e.date FROM expenses e JOIN categories c ON e.category = c.id
-                                ORDER BY e.date ASC'''
+                                ORDER BY e.date ASC LIMIT 10'''
                 parameters = ()
             else:
                 chartQuery = '''SELECT amount, date FROM expenses e JOIN categories c ON e.category = c.id
