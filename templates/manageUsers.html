@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Dziennik wydatków</h1>
+        </header>
+        <nav>
+            <a href="{{ url_for('index')}}" class="navButton">Strona główna</a>
+            <a href="{{ url_for('add')}}" class="navButton">Dodaj rekord</a>
+            <a href="{{ url_for('stats')}}" class="navButton">Statystyki</a>
+            <a href="{{ url_for('report')}}" class="navButton">Generuj raport</a>
+            <a href="{{ url_for('login')}}" class="navButton">Zmień użytkownika</a>
+            <a href="{{ url_for('manageUsers')}}" class="navButton">Zarządzaj użytkownikami</a>
+        </nav>
+        <main>
+            <div class="dataInput">
+                <form method="POST">
+                    <label>Dodaj nowego użytkownika</label>
+                    <input type="text" name="newUser" placeholder="Nazwa użytkownika">
+
+                    <button type="submit">Zaloguj</button>
+                </form>
+            </div>
+        </main>
+        <section>
+        </section>
+        <footer>
+            <h5>Zalogowano jako: {{ user }}</h5>
+        </footer>
+    </div>
+</body>
+</html>

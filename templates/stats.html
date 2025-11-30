@@ -17,6 +17,8 @@
             <a href="{{ url_for('add')}}" class="navButton">Dodaj rekord</a>
             <a href="{{ url_for('stats')}}" class="navButton">Statystyki</a>
             <a href="{{ url_for('report')}}" class="navButton">Generuj raport</a>
+            <a href="{{ url_for('login')}}" class="navButton">Zmień użytkownika</a>
+            <a href="{{ url_for('manageUsers')}}" class="navButton">Zarządzaj użytkownikami</a>
         </nav>
         <main>
             <div class="dataInput">
@@ -77,6 +79,7 @@
                         <th>Komentarz</th>
                         <th>x</th>
                         <th>Data</th>
+                        <th>Użytkownik</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,13 +93,14 @@
                         <td>{{ expense.comment }}</td>
                         <td>{{ "Tak" if expense.privExpense == 1 else "Nie" }}</td>
                         <td>{{ expense.date }}</td>
+                        <td>{{ expense.username }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </section>
         <footer>
-            <h5>Mateusz Siudy</h5>
+            <h5>Zalogowano jako: {{ user }}</h5>
         </footer>
     </div>
 </body>

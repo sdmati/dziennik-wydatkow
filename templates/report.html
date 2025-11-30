@@ -16,10 +16,10 @@
             <a href="{{ url_for('add')}}" class="navButton">Dodaj rekord</a>
             <a href="{{ url_for('stats')}}" class="navButton">Statystyki</a>
             <a href="{{ url_for('report')}}" class="navButton">Generuj raport</a>
+            <a href="{{ url_for('login')}}" class="navButton">Zmień użytkownika</a>
+            <a href="{{ url_for('manageUsers')}}" class="navButton">Zarządzaj użytkownikami</a>
         </nav>
         <main>
-            <div class="chart">
-            </div>
             <div class="dataInput">
 
             </div>
@@ -27,7 +27,7 @@
         <section>
         </section>
         <footer>
-            <h5>Mateusz Siudy</h5>
+            <h5>Zalogowano jako: {{ user }}</h5>
         </footer>
     </div>
 </body>
