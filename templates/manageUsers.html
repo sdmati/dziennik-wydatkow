@@ -25,12 +25,29 @@
                     <label>Dodaj nowego użytkownika</label>
                     <input type="text" name="newUser" placeholder="Nazwa użytkownika">
 
-                    <button type="submit">Zaloguj</button>
+                    <input type="submit" value="Dodaj">
                 </form>
             </div>
-        </main>
-        <section>
+            <section>
+            <table>
+                <thead>
+                    <th>UID</th>
+                    <th>Nazwa użytkownika</th>
+                    <th>Edytuj</th>
+                </thead>
+                <tbody>
+                    {% for account in accounts %}
+                        <tr>
+                            <td>{{ account.id }}</td>
+                            <td>{{ account.username }}</td>
+                            <td><a href="{{ url_for('editUser', id=account.id) }}">x</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </section>
+        </main>
+
         <footer>
             <h5>Zalogowano jako: {{ user }}</h5>
         </footer>

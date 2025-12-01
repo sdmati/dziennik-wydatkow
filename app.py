@@ -52,7 +52,37 @@ def manageUsers():
         newUser = request.form['newUser']
         conn.execute('''INSERT INTO users (username) VALUES (?)''', (newUser,))
         conn.commit()
-    return render_template('manageUsers.html', users=users, user=userName())
+
+    accounts = conn.execute('''SELECT id, username FROM users''').fetchall()
+    conn.close()
+
+    return render_template('manageUsers.html', users=users, user=userName(), accounts=accounts)
+
+@app.route('/editUser/<int:id>', methods=['GET', 'POST'])
+def editUser(id):
+    if 'uid' not in session:
+        return redirect('/login')
+    conn = get_db_connection()
+    account = conn.execute('''SELECT id, username FROM users WHERE id = ? ''', (id,)).fetchone()
+    if request.method == 'POST':
+        action = request.form['action']
+        if action == "Potwierdź zmiane":
+            conn.execute('''UPDATE users SET username = ? WHERE id = ?''', (request.form['username'], id) )
+            conn.commit()
+        elif action == "Usuń tego użytkownika":
+            conn.execute('''DELETE FROM users WHERE id = ?''', (id,))
+            conn.execute('''UPDATE expenses SET uid = 0 WHERE uid = ?''', (id,))
+            conn.commit()
+            if id == int(session.get('uid')):
+                session.clear()
+                conn.close()
+                return redirect('/login')
+
+        return redirect('/manageUsers')
+
+    conn.close()
+
+    return render_template('editUser.html', account=account, user=userName())
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if 'uid' not in session:

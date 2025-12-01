@@ -1,29 +1,23 @@
-/* --- BAZA I RESET --- */
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   font-family: Arial, Helvetica, sans-serif;
-  /* Usunięto centrowanie i ciemne tło, aby aplikacja zajmowała cały ekran */
   background-color: #eef;
 }
 
-/* --- GŁÓWNY KONTENER (PEŁNA SZEROKOŚĆ) --- */
 .wrapper {
   width: 100%;
-  min-height: 100vh; /* Gwarantuje, że strona ma min. wysokość okna */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #eef;
-  /* Usunięto cienie i zaokrąglenia (niepotrzebne przy full-width) */
   box-shadow: none;
   border-radius: 0;
 }
 
-/* --- NAGŁÓWEK I NAWIGACJA --- */
 header {
-  /* Stała wysokość lub padding zamiast flex % jest bezpieczniejsza, ale zostawiam flex jeśli wolisz */
   padding: 20px 0;
   background-color: rgb(34, 77, 126);
   text-align: center;
@@ -32,45 +26,40 @@ header {
 
 nav {
   padding: 10px 0;
-  background-color: rgb(34, 77, 126); /* Ten sam kolor co header, tworzy spójną górę */
+  background-color: rgb(34, 77, 126);
   text-align: center;
-  border-bottom: 1px solid rgba(255,255,255,0.1); /* Delikatne oddzielenie */
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .navButton {
   background-color: lightblue;
-  padding: 10px 15px; /* Nieco szersze przyciski */
+  padding: 10px 15px;
   margin-inline: 5px;
   border-radius: 20px;
   text-decoration: none;
   color: rgb(34, 77, 126);
   font-weight: bold;
-  display: inline-block; /* Naprawia zachowanie paddingu */
+  display: inline-block;
 }
 
 .navButton:hover {
   background-color: lightskyblue;
   transition: 0.3s;
-  /* Usunięto zmianę paddingu przy hover, bo powoduje to "skakanie" layoutu. 
-     Zamiast tego można zmienić kolor lub dodać transform */
   transform: scale(1.05); 
 }
 
-/* --- GŁÓWNA TREŚĆ (ROZCIĄGANIE) --- */
 main {
-  flex: 1; /* KLUCZOWE: Wypycha stopkę na sam dół i zajmuje wolne miejsce */
+  flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #eef; /* Zmiana z niebieskiego na biały dla czytelności */
-  padding: 20px; /* Oddech dla treści */
+  background-color: #eef;
+  padding: 20px;
 }
 
-/* Specyficzne dla strony index - jeśli potrzebne */
 .index main {
   background-color: #eef;
 }
 
-/* --- WYKRESY I SEKCJE --- */
 .chart {
   flex-grow: 1; 
   max-height: 300px;
@@ -87,20 +76,20 @@ main {
 
 #myChart {
   width: 100%;
-  max-height: 100%; /* Zapobiega wychodzeniu wykresu poza kontener */
+  max-height: 100%;
 }
 
-/* --- FORMULARZE I INPUTY --- */
 .dataInput {
   padding: 20px;
   background-color: rgb(34, 77, 126);
   display: flex;
-  flex-direction: row; /* Zmieniłem na rząd, żeby inputy były obok siebie na szerokim ekranie */
-  gap: 10px; /* Odstęp między elementami */
+  flex-direction: row;
+  gap: 10px;
   justify-content: center;
   align-items: center;
   color: white;
-  flex-wrap: wrap; /* Żeby na komórce spadły pod siebie */
+  flex-wrap: wrap;
+  border-radius: 20px;
 }
 
 .dataInput input {
@@ -128,18 +117,17 @@ section {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #eef; /* Bardzo jasny niebieski tła */
+  background-color: #eef;
 }
 
-/* --- TABELA --- */
 table {
-  width: 100%; /* Tabela teraz zajmie całą szerokość */
-  max-width: 1200px; /* Ale nie więcej niż 1200px żeby się dobrze czytało */
-  margin: 0 auto; /* Wyśrodkowanie tabeli */
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   text-align: center;
-  border-collapse: collapse; /* Ładniejsze krawędzie */
+  border-collapse: collapse;
   background-color: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Lekki cień dla samej tabeli */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 td, th {
@@ -151,7 +139,6 @@ tr:hover {
   background-color: #f1f1f1;
 }
 
-/* --- STOPKA --- */
 footer {
   padding: 15px 0;
   background-color: rgb(34, 77, 126);
