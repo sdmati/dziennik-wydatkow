@@ -34,7 +34,7 @@ def userName():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     conn = get_db_connection()
-    users = conn.execute('''SELECT id, username FROM users''').fetchall()
+    users = conn.execute('''SELECT id, username FROM users WHERE id != 0''').fetchall()
 
     if request.method == 'POST':
         uid = request.form.get('user')
@@ -47,13 +47,13 @@ def manageUsers():
     if 'uid' not in session:
         return redirect('/login')
     conn = get_db_connection()
-    users = conn.execute('''SELECT id, username FROM users''').fetchall()
+    users = conn.execute('''SELECT id, username FROM users WHERE id != 0''').fetchall()
     if request.method == 'POST':
         newUser = request.form['newUser']
         conn.execute('''INSERT INTO users (username) VALUES (?)''', (newUser,))
         conn.commit()
 
-    accounts = conn.execute('''SELECT id, username FROM users''').fetchall()
+    accounts = conn.execute('''SELECT id, username FROM users WHERE id != 0''').fetchall()
     conn.close()
 
     return render_template('manageUsers.html', users=users, user=userName(), accounts=accounts)
