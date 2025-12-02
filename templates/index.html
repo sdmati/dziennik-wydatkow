@@ -16,9 +16,10 @@
             <a href="{{ url_for('index')}}" class="navButton">Strona główna</a>
             <a href="{{ url_for('add')}}" class="navButton">Dodaj rekord</a>
             <a href="{{ url_for('stats')}}" class="navButton">Statystyki</a>
+            <a href="{{ url_for('budget')}}" class="navButton">Budżet</a>
             <a href="{{ url_for('report')}}" class="navButton">Generuj raport</a>
-            <a href="{{ url_for('login')}}" class="navButton">Zmień użytkownika</a>
             <a href="{{ url_for('manageUsers')}}" class="navButton">Zarządzaj użytkownikami</a>
+            <a href="{{ url_for('login')}}" class="navButton">Zmień użytkownika</a>
         </nav>
         <main>
             <div class="chart">
@@ -52,6 +53,10 @@
             </div>
 
             <div class="statistics">
+                <p>Budżet na aktualny miesiąc ({{ currentMonth }}) wynosi <b>{{ monthBudget['value'] }}</b> złotych.</p>
+                <p>Wydano już {{ spentMoney['spent'] }}zł - {{ percent }}% ustalonego budżetu.</p>
+                <p>Wydawałeś średnio {{ ((spentMoney['spent'])/daysPassed)|round(2) }}zł dziennie.</p>
+                <p>Do końca miesiąca pozostało {{ daysLeft }} dni. Średnio możesz wydać {{ ((monthBudget['value']-spentMoney['spent'])/daysLeft)|round(2) }}zł dziennie</p>
 
             </div>
         </main>

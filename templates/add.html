@@ -15,9 +15,10 @@
             <a href="{{ url_for('index')}}" class="navButton">Strona główna</a>
             <a href="{{ url_for('add')}}" class="navButton">Dodaj rekord</a>
             <a href="{{ url_for('stats')}}" class="navButton">Statystyki</a>
+            <a href="{{ url_for('budget')}}" class="navButton">Budżet</a>
             <a href="{{ url_for('report')}}" class="navButton">Generuj raport</a>
-            <a href="{{ url_for('login')}}" class="navButton">Zmień użytkownika</a>
             <a href="{{ url_for('manageUsers')}}" class="navButton">Zarządzaj użytkownikami</a>
+            <a href="{{ url_for('login')}}" class="navButton">Zmień użytkownika</a>
         </nav>
         <main>
             <div class="dataInput">
@@ -32,7 +33,7 @@
                     <input type="text" name="comment" placeholder="Komentarz">
                     <input type="date" name="date">
                     <input type="checkbox" name="privExpense" value="1">
-                    <input type="submit" value="Potwierdź">
+                    <input type="submit" value="Dodaj">
                 </form>
             </div>
         </main>

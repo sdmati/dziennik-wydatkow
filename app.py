@@ -4,6 +4,9 @@ from urllib.parse import uses_relative
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import calendar
+import pandas as pd
 
 app = Flask(__name__)
 app.secret_key = "1234"
@@ -88,23 +91,23 @@ def index():
     if 'uid' not in session:
         return redirect('/login')
     conn = get_db_connection()
-    
-    # generowanie danych do tabelki
-
-    expenses = conn.execute('''SELECT e.id, e.name, c.name AS category, e.amount, e.comment, e.privExpense, e.date FROM expenses e 
-                                JOIN categories c ON e.category = c.id
-                                ORDER BY e.id ASC LIMIT 10''').fetchall()
-
+    currentMonth = datetime.now().strftime('%m-%Y')
     # generowanie danych do wykresu
 
     chartData = conn.execute('''SELECT amount, date FROM expenses WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now') ORDER BY date''').fetchall()
-
-    conn.close()
-
     labels = [row["date"] for row in chartData]
     values = [row["amount"] for row in chartData]
+    monthBudget = conn.execute('''SELECT value FROM budget WHERE month = strftime('%Y-%m', 'now')''').fetchone()
+    spentMoney = conn.execute('''SELECT sum(amount) AS spent FROM expenses WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now')''').fetchone()
+    conn.close()
 
-    return render_template('index.html', expenses = expenses, labels = labels, values = values, user=userName())
+    percent = round((spentMoney[0] / monthBudget[0])*100, 2)
+    today = datetime.today()
+    daysMonth = calendar.monthrange(today.year, today.month)[1]
+    daysPassed = today.day
+    daysLeft = daysMonth - daysPassed
+
+    return render_template('index.html', labels = labels, values = values, user=userName(), monthBudget = monthBudget, currentMonth=currentMonth, spentMoney = spentMoney, percent=percent, today=today, daysMonth=daysMonth, daysPassed=daysPassed, daysLeft=daysLeft)
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
@@ -138,6 +141,28 @@ def add():
         return redirect('/')
 
     return render_template('add.html', categories = categories, user=userName())
+
+@app.route('/budget', methods=['GET', 'POST'])
+def budget():
+    if 'uid' not in session:
+        return redirect('/login')
+    conn = get_db_connection()
+    currentMonth = datetime.now().strftime('%Y-%m')
+    lastMonth = datetime.now() - relativedelta(months=1)
+
+    if request.method == 'POST':
+        value = float(request.form['value'])
+        month = request.form['month']
+        conn.execute('''INSERT OR REPLACE INTO budget(month, value) VALUES (?, ?)''', (month, value))
+        conn.commit()
+        conn.close()
+        # return render_template('budget.html', user=userName(), currentMonth=currentMonth, lastMonth=lastMonth)
+        return redirect('/budget')
+
+    chart = conn.execute('''SELECT month, value FROM budget ORDER BY month DESC LIMIT 12''').fetchall()
+    conn.close()
+
+    return render_template('budget.html', user=userName(), currentMonth=currentMonth, lastMonth=lastMonth, chart=chart)
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):

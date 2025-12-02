@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Dziennik wydatków</h1>
+        </header>
+        <nav>
+            <a href="{{ url_for('index')}}" class="navButton">Strona główna</a>
+            <a href="{{ url_for('add')}}" class="navButton">Dodaj rekord</a>
+            <a href="{{ url_for('stats')}}" class="navButton">Statystyki</a>
+            <a href="{{ url_for('budget')}}" class="navButton">Budżet</a>
+            <a href="{{ url_for('report')}}" class="navButton">Generuj raport</a>
+            <a href="{{ url_for('manageUsers')}}" class="navButton">Zarządzaj użytkownikami</a>
+            <a href="{{ url_for('login')}}" class="navButton">Zmień użytkownika</a>
+        </nav>
+        <main>
+            <div class="dataInput">
+                <form action="" method="POST">
+                    <input type="month" name="month" min="{{ lastMonth }}" value="{{ currentMonth }}">
+                    <input type="number" name="value" placeholder="Budżet">
+                    <input type="submit" value="Ustaw">
+                </form>
+            </div>
+            <section>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Miesiąc</th>
+                            <th>Budżet</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in chart %}
+                        <tr>
+                            <td>{{ row.month }}</td>
+                            <td>{{ row.value }}zł</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer>
+            <h5>Zalogowano jako: {{ user }}</h5>
+        </footer>
+    </div>
+</body>
+</html>
