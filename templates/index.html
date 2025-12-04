@@ -53,10 +53,34 @@
             </div>
 
             <div class="statistics">
-                <p>Budżet na aktualny miesiąc ({{ currentMonth }}) wynosi <b>{{ monthBudget['value'] }}</b> złotych.</p>
-                <p>Wydano już {{ spentMoney['spent'] }}zł - {{ percent }}% ustalonego budżetu.</p>
-                <p>Wydawałeś średnio {{ ((spentMoney['spent'])/daysPassed)|round(2) }}zł dziennie.</p>
-                <p>Do końca miesiąca pozostało {{ daysLeft }} dni. Średnio możesz wydać {{ ((monthBudget['value']-spentMoney['spent'])/daysLeft)|round(2) }}zł dziennie</p>
+                <center>
+                    <p>Budżet na aktualny miesiąc ({{ currentMonth }}) wynosi <b>{{ monthBudget['value'] }}</b> złotych.</p>
+                    <p>Wydano już {{ spentMoney['spent'] }}zł - {{ percent }}% ustalonego budżetu.</p>
+                    <p>Wydawałeś średnio {{ ((spentMoney['spent'])/daysPassed)|round(2) }}zł dziennie.</p>
+                    <p>Do końca miesiąca pozostało {{ daysLeft }} dni. Pozostała kwota to {{ (monthBudget['value']-spentMoney['spent'])|round(2) }}zł.</p>
+                    <p>Średnio można wydać {{ (((monthBudget['value']-spentMoney['spent']))/daysLeft)|round(2) }}zł dziennie</p>
+                    <hr>
+                    <p>Największy jednorazowy wydatek to <b>{{ highest['name'] }} - {{ highest['amount'] }}zł</b></p>
+                    <p>Wydatki prywatne to {{ privPercent }}% wszystkich wpisów do dziennika</p>
+                    <p>Liczba transakcji w tym miesiącu wyniosła {{ transactions['value'] }}</p>
+                    <h2>TOP 5 WYDATKÓW</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <td><b>Użytkownik</b></td>
+                                <td><b>Kwota</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for row in perUser %}
+                            <tr>
+                                <td>{{ row.username }}</td>
+                                <td>{{ row.totalSpent }}zł</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </center>
 
             </div>
         </main>

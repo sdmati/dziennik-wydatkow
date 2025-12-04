@@ -99,15 +99,21 @@ def index():
     values = [row["amount"] for row in chartData]
     monthBudget = conn.execute('''SELECT value FROM budget WHERE month = strftime('%Y-%m', 'now')''').fetchone()
     spentMoney = conn.execute('''SELECT sum(amount) AS spent FROM expenses WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now')''').fetchone()
+    highest = conn.execute('''SELECT name, amount FROM expenses WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now') ORDER BY amount DESC LIMIT 1''').fetchone()
+    privPercentage = conn.execute('''SELECT (SUM(CASE WHEN privExpense = 1 THEN amount ELSE 0 END) * 100.0) / SUM(amount) as privPercentage FROM expenses WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now')''').fetchone()
+    perUser = conn.execute('''SELECT u.username, SUM(e.amount) as totalSpent FROM expenses e LEFT JOIN users u ON e.uid = u.id WHERE strftime('%Y-%m', e.date) = strftime('%Y-%m', 'now') GROUP BY u.username ORDER BY totalSpent DESC LIMIT 5''').fetchall()
+    transactions = conn.execute('''SELECT COUNT(*) as value FROM expenses WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now')''').fetchone()
+
     conn.close()
 
-    percent = round((spentMoney[0] / monthBudget[0])*100, 2)
+    percent = round((spentMoney[0] / monthBudget[0]) * 100, 2)
     today = datetime.today()
     daysMonth = calendar.monthrange(today.year, today.month)[1]
     daysPassed = today.day
     daysLeft = daysMonth - daysPassed
+    privPercent = round((privPercentage[0] / 100) * 100, 2)
 
-    return render_template('index.html', labels = labels, values = values, user=userName(), monthBudget = monthBudget, currentMonth=currentMonth, spentMoney = spentMoney, percent=percent, today=today, daysMonth=daysMonth, daysPassed=daysPassed, daysLeft=daysLeft)
+    return render_template('index.html', labels = labels, values = values, user=userName(), monthBudget = monthBudget, currentMonth=currentMonth, spentMoney = spentMoney, percent=percent, today=today, daysMonth=daysMonth, daysPassed=daysPassed, daysLeft=daysLeft, highest=highest, privPercent=privPercent, transactions=transactions, perUser=perUser)
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
