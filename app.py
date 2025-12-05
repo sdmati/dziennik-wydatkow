@@ -1,8 +1,9 @@
 from time import strftime
 from urllib.parse import uses_relative
 
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, send_file
 import sqlite3
+import io
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import calendar
@@ -274,6 +275,95 @@ def report():
     if 'uid' not in session:
         return redirect('/login')
     conn = get_db_connection()
+    categories = generateCategories()
+
+    if request.method == 'POST':
+        firstDate = request.form.get('firstDate').strip()
+        secondDate = request.form.get('secondDate').strip()
+        category = request.form.get('category').strip()
+
+        if firstDate == '' or secondDate == '':
+            if category == 'every':
+                tableQuery = '''SELECT e.id, \
+                                       e.name, \
+                                       c.name AS category, \
+                                       e.amount, \
+                                       e.comment, \
+                                       e.privExpense, \
+                                       e.date, \
+                                       u.username \
+                                FROM expenses e \
+                                         JOIN categories c ON e.category = c.id \
+                                         JOIN users u ON e.uid = u.id
+                                ORDER BY e.date ASC'''
+                parameters = ()
+            else:
+                tableQuery = '''SELECT e.id, \
+                                       e.name, \
+                                       c.name AS category, \
+                                       e.amount, \
+                                       e.comment, \
+                                       e.privExpense, \
+                                       e.date, \
+                                       u.username \
+                                FROM expenses e \
+                                         JOIN categories c ON e.category = c.id \
+                                         JOIN users u ON e.uid = u.id
+                                WHERE c.id = ? \
+                                ORDER BY e.date ASC '''
+                parameters = (category,)
+
+        else:
+            if firstDate > secondDate:
+                firstDate, secondDate = secondDate, firstDate
+            if category == 'every':
+                tableQuery = '''SELECT e.id, \
+                                       e.name, \
+                                       c.name AS category, \
+                                       e.amount, \
+                                       e.comment, \
+                                       e.privExpense, \
+                                       e.date, \
+                                       u.username \
+                                FROM expenses e \
+                                         JOIN categories c ON e.category = c.id \
+                                         JOIN users u ON e.uid = u.id
+                                WHERE e.date BETWEEN ? AND ? \
+                                ORDER BY e.date ASC '''
+                parameters = (firstDate, secondDate)
+
+            else:
+                tableQuery = '''SELECT e.id, \
+                                       e.name, \
+                                       c.name AS category, \
+                                       e.amount, \
+                                       e.comment, \
+                                       e.privExpense, \
+                                       e.date, \
+                                       u.username \
+                                FROM expenses e \
+                                         JOIN categories c ON e.category = c.id \
+                                         JOIN users u ON e.uid = u.id
+                                WHERE e.date BETWEEN ? AND ? \
+                                  AND c.id = ? \
+                                ORDER BY e.date ASC '''
+                parameters = (firstDate, secondDate, category)
+
+        expenses = conn.execute(tableQuery, parameters).fetchall()
+        data = [dict(expense) for expense in expenses]
+        df = pd.DataFrame(data)
+        conn.close()
+        output = io.BytesIO()
+        df.to_excel(output, index=False, engine='openpyxl')
+        output.seek(0)
+
+        return send_file(
+            output,
+            as_attachment=True,
+            download_name="raport.xlsx",
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+
     return render_template('report.html', user=userName())
 
 if __name__ == '__main__':

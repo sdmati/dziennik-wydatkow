@@ -22,7 +22,19 @@
         </nav>
         <main>
             <div class="dataInput">
-
+                <form action="" method="POST">
+                    Zakres dat od
+                    <input type="date" name="firstDate"> do
+                    <input type="date" name="secondDate">
+                    Kategoria:
+                    <select name="category" id="category">
+                        <option value="every">Wszystko</option>
+                        {% for category in categories %}
+                            <option value={{ category.id }}> {{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="Generuj raport">
+                </form>
             </div>
         </main>
         <section>
