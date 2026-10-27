@@ -1,6 +1,4 @@
-from time import strftime
-from urllib.parse import uses_relative
-
+import os
 from flask import Flask, render_template, request, redirect, session, send_file
 import sqlite3
 import io
@@ -10,7 +8,7 @@ import calendar
 import pandas as pd
 
 app = Flask(__name__)
-app.secret_key = "1234"
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 
 
 def get_db_connection():
@@ -21,7 +19,9 @@ def get_db_connection():
 def generateCategories():
     conn = get_db_connection()
     categories = conn.execute('''SELECT id, name FROM categories''').fetchall()
-    categories.append(categories.pop(0))
+    conn.close()
+    if categories:
+        categories.append(categories.pop(0))
 
     return categories
 
@@ -39,6 +39,7 @@ def userName():
 def login():
     conn = get_db_connection()
     users = conn.execute('''SELECT id, username FROM users WHERE id != 0''').fetchall()
+    conn.close()
 
     if request.method == 'POST':
         uid = request.form.get('user')
@@ -107,14 +108,19 @@ def index():
 
     conn.close()
 
-    percent = round((spentMoney[0] / monthBudget[0]) * 100, 2)
+    monthBudgetValue = monthBudget["value"] if monthBudget else 0
+    spentValue = spentMoney["spent"] or 0
+    percent = round((spentValue / monthBudgetValue) * 100, 2) if monthBudgetValue else 0
     today = datetime.today()
     daysMonth = calendar.monthrange(today.year, today.month)[1]
     daysPassed = today.day
     daysLeft = daysMonth - daysPassed
-    privPercent = round((privPercentage[0] / 100) * 100, 2)
+    privPercent = round(privPercentage["privPercentage"] or 0, 2)
+    remainingBudget = round(monthBudgetValue - spentValue, 2)
+    averageSpent = round(spentValue / daysPassed, 2) if daysPassed else 0
+    averageRemaining = round(remainingBudget / daysLeft, 2) if daysLeft else 0
 
-    return render_template('index.html', labels = labels, values = values, user=userName(), monthBudget = monthBudget, currentMonth=currentMonth, spentMoney = spentMoney, percent=percent, today=today, daysMonth=daysMonth, daysPassed=daysPassed, daysLeft=daysLeft, highest=highest, privPercent=privPercent, transactions=transactions, perUser=perUser)
+    return render_template('index.html', labels = labels, values = values, user=userName(), monthBudget = monthBudgetValue, currentMonth=currentMonth, spentMoney = spentValue, percent=percent, today=today, daysMonth=daysMonth, daysPassed=daysPassed, daysLeft=daysLeft, highest=highest, privPercent=privPercent, transactions=transactions, perUser=perUser, remainingBudget=remainingBudget, averageSpent=averageSpent, averageRemaining=averageRemaining)
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
@@ -145,8 +151,10 @@ def add():
                      VALUES (?, ?, ?, ?, ?, ?, ?)
                      ''', (name, category, amount, comment, privExpense, date, session['uid']))
         conn.commit()
+        conn.close()
         return redirect('/')
 
+    conn.close()
     return render_template('add.html', categories = categories, user=userName())
 
 @app.route('/budget', methods=['GET', 'POST'])
@@ -155,7 +163,7 @@ def budget():
         return redirect('/login')
     conn = get_db_connection()
     currentMonth = datetime.now().strftime('%Y-%m')
-    lastMonth = datetime.now() - relativedelta(months=1)
+    lastMonth = (datetime.now() - relativedelta(months=1)).strftime('%Y-%m')
 
     if request.method == 'POST':
         value = float(request.form['value'])
@@ -201,6 +209,7 @@ def edit(id):
         return render_template('edit.html', categories = categories, data = data, user=userName())
 
 
+    conn.close()
     return render_template('edit.html', categories = categories, data = data, user=userName())
 
 @app.route('/stats', methods=['GET', 'POST'])
@@ -364,7 +373,8 @@ def report():
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
 
-    return render_template('report.html', user=userName())
+    conn.close()
+    return render_template('report.html', categories=categories, user=userName())
 
 if __name__ == '__main__':
     app.run(debug=True)

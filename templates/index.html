@@ -54,13 +54,17 @@
 
             <div class="statistics">
                 <center>
-                    <p>Budżet na aktualny miesiąc ({{ currentMonth }}) wynosi <b>{{ monthBudget['value'] }}</b> złotych.</p>
-                    <p>Wydano już {{ spentMoney['spent'] }}zł - {{ percent }}% ustalonego budżetu.</p>
-                    <p>Wydawałeś średnio {{ ((spentMoney['spent'])/daysPassed)|round(2) }}zł dziennie.</p>
-                    <p>Do końca miesiąca pozostało {{ daysLeft }} dni. Pozostała kwota to {{ (monthBudget['value']-spentMoney['spent'])|round(2) }}zł.</p>
-                    <p>Średnio można wydać {{ (((monthBudget['value']-spentMoney['spent']))/daysLeft)|round(2) }}zł dziennie</p>
+                    <p>Budżet na aktualny miesiąc ({{ currentMonth }}) wynosi <b>{{ monthBudget }}</b> złotych.</p>
+                    <p>Wydano już {{ spentMoney }}zł - {{ percent }}% ustalonego budżetu.</p>
+                    <p>Wydawałeś średnio {{ averageSpent }}zł dziennie.</p>
+                    <p>Do końca miesiąca pozostało {{ daysLeft }} dni. Pozostała kwota to {{ remainingBudget }}zł.</p>
+                    <p>Średnio można wydać {{ averageRemaining }}zł dziennie</p>
                     <hr>
-                    <p>Największy jednorazowy wydatek to <b>{{ highest['name'] }} - {{ highest['amount'] }}zł</b></p>
+                    {% if highest %}
+                        <p>Największy jednorazowy wydatek to <b>{{ highest['name'] }} - {{ highest['amount'] }}zł</b></p>
+                    {% else %}
+                        <p>Brak wydatków w bieżącym miesiącu.</p>
+                    {% endif %}
                     <p>Wydatki prywatne to {{ privPercent }}% wszystkich wpisów do dziennika</p>
                     <p>Liczba transakcji w tym miesiącu wyniosła {{ transactions['value'] }}</p>
                     <h2>TOP 5 WYDATKÓW</h2>
